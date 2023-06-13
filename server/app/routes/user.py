@@ -18,8 +18,9 @@ class Result:
 @user.route('/')
 def get_users():
     screenEntity = ScreenEntity()
+    data = screenEntity.get_all()
 
     result = Result(
-        success=True, message='Users retrieved successfully', data=screenEntity.get_all())
+        success=True, message='Users retrieved successfully', data=data)
 
     return jsonify(result.__dict__), 200
