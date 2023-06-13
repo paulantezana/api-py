@@ -17,15 +17,15 @@ class ScreenEntity:
         rows = cursor.fetchall()
         cursor.close()
         return rows
-    def paginate_header(self):
+    def paginate_header(self, screen_id):
         """get paginate headers"""
         connection = get_connection()
         query = """select field_name, field_title, filterable, sortable, visible, col_index from dictionary.screen_entity_fields as dsef
                     inner join dictionary.screen_entities as se on dsef.screen_entity_id = se.id
-                    where se.multiple = true"""
+                    where se.multiple = true and se.screen_id = %s"""
 
         with connection.cursor() as cursor:
-            cursor.execute(query)
+            cursor.execute(query, (screen_id,))
             rows = cursor.fetchall()
 
         return rows
