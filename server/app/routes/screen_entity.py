@@ -10,19 +10,24 @@ screen_entity = Blueprint('screen_entity', __name__,
 
 
 @screen_entity.route('/paginate/properties', methods=['POST'])
-# @screen_entity.route('/paginate/properties')
 def paginate_properties():
     """Paginate properties"""
     data = request.get_json()
 
-    print("sssssssssssssssssssssssss");
-
     entity = ScreenEntity()
-    paginate_header = entity.paginate_header(screen_id=1)
+    paginate_header = entity.paginate_header(screen_id = data['screen_id'])
 
-    data = {
+    result = {
         'header': paginate_header,
-        # 'actions': data.screen_id
+        # 'actions': data['screen_id'],
     }
 
-    return jsonify(data)
+    return jsonify(result)
+def paginate():
+    """Paginate data"""
+    data = request.get_json()
+
+    entity = ScreenEntity()
+    page = entity.paginate(page_request = data, screen_id = 1)
+
+    return jsonify(page)
