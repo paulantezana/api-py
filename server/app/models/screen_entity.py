@@ -11,7 +11,8 @@ class ScreenEntity(BaseRecord):
 
     def __init__(self):
         connection = get_connection()
-        super().__init__(table='app.screen_entities', primary_key= 'id', connection= connection)
+        super().__init__(table='app.screen_entities',
+                         primary_key='id', connection=connection)
 
     def dictfetchall(self, cursor):
         """Retorna todas las filas del cursor como un diccionario"""
