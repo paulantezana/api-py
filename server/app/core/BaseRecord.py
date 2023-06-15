@@ -16,13 +16,18 @@ class BaseRecord(BaseModel):
         self.primary_key = primary_key
         self.connection = connection
 
+    def dictfetchall(self, cursor):
+        """Retorna todas las filas del cursor como un diccionario"""
+        desc = cursor.description
+        return [dict(zip([col[0] for col in desc], row)) for row in cursor.fetchall()]
+    
     def get_all(self, prefix=''):
         """select get all data"""
         prefix = self.assembly_prefix(prefix)
         sql = f"SELECT * FROM {prefix}{self.table}"
         with self.connection.cursor() as cursor:
             cursor.execute(sql)
-            return cursor.fetchall()
+            return self.dictfetchall(cursor)
 
     def paginate(self, page_request, prefix=''):
         """simple paginate"""
@@ -41,7 +46,7 @@ class BaseRecord(BaseModel):
         sql = f"SELECT * FROM {prefix}{self.table} {where_sql} {sort_sql} LIMIT {offset}, {page_request['limit']}"
         with self.connection.cursor() as cursor:
             cursor.execute(sql)
-            data = cursor.fetchall()
+            data = self.dictfetchall(cursor)
 
         return {
             'current': page_request['page'],

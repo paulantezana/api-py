@@ -3,7 +3,7 @@ User routes
 """
 
 from flask import Blueprint, jsonify
-from app.models.screen_entity import ScreenEntity
+from app.models.ScreenEntity import ScreenEntity
 
 user = Blueprint('user', __name__)
 
