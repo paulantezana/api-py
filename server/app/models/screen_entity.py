@@ -3,10 +3,15 @@ model
 """
 import math
 from app.services.Database import get_connection
+from app.core.BaseRecord import BaseRecord
 
 
-class ScreenEntity:
-    """screen enity model"""
+class ScreenEntity(BaseRecord):
+    """screen enity base record"""
+
+    def __init__(self):
+        connection = get_connection()
+        super().__init__(table='app.screen_entities', primary_key= 'id', connection= connection)
 
     def dictfetchall(self, cursor):
         """Retorna todas las filas del cursor como un diccionario"""
