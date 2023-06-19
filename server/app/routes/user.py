@@ -2,25 +2,34 @@
 User routes
 """
 
-from flask import Blueprint, jsonify
-from app.models.ScreenEntity import ScreenEntity
+from flask import Blueprint, jsonify, request
+from flask_jwt_extended import create_access_token
+from app.models.UserRecord import UserRecord
+from app.entities.Result import Result
+from app.services.Database import get_connection
 
-user = Blueprint('user', __name__)
-
-
-class Result:
-    def __init__(self, success, message, data=None):
-        self.success = success
-        self.message = message
-        self.data = data
+user = Blueprint('user', __name__, url_prefix='/user')
 
 
-@user.route('/')
-def get_users():
-    screenEntity = ScreenEntity()
-    data = screenEntity.get_all()
+@user.route('/login', methods=['POST'])
+def login():
+    """Login user"""
+    res = Result()
+    data = request.get_json()
+    connection = get_connection()
 
-    result = Result(
-        success=True, message='Users retrieved successfully', data=data)
+    user_record = UserRecord(connection)
+    user_data = user_record.login(data['userName'], data['password'])
 
-    return jsonify(result.__dict__), 200
+    if user_data is None:
+        res.success = False
+        res.message = 'Invalid username or password'
+        return jsonify(res.__dict__), 401
+
+    token = create_access_token(identity=user_data['id'])
+
+    res.success = True
+    res.result = {'user': user_data, 'token': token}
+    res.message = 'Login success'
+
+    return jsonify(res.__dict__), 200

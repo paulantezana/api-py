@@ -4,7 +4,7 @@ menu
 
 from app.core.BaseRecord import BaseRecord
 
-class Menu(BaseRecord):
+class MenuRecord(BaseRecord):
     """entity model"""
 
     def __init__(self, connection):

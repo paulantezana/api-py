@@ -20,7 +20,7 @@ class BaseRecord(BaseModel):
         """Retorna todas las filas del cursor como un diccionario"""
         desc = cursor.description
         return [dict(zip([col[0] for col in desc], row)) for row in cursor.fetchall()]
-    
+
     def get_all(self, prefix=''):
         """select get all data"""
         prefix = self.assembly_prefix(prefix)
@@ -70,7 +70,13 @@ class BaseRecord(BaseModel):
         sql = f"SELECT * FROM {prefix}{self.table} WHERE {column_name} = %s LIMIT 1"
         with self.connection.cursor() as cursor:
             cursor.execute(sql, (value,))
-            return cursor.fetchone()
+            row = cursor.fetchone()
+
+        if row is not None:
+            column_names = [desc[0] for desc in cursor.description]
+            return dict(zip(column_names, row))
+
+        return None
 
     def delete_by_id(self, primary_key):
         """delete data by id"""
@@ -123,7 +129,8 @@ class BaseRecord(BaseModel):
             if exp.pgcode == '23000':
                 raise ControlledException(exp.diag.message_detail) from exp
             else:
-                raise ControlledException("Error al actualizar datos: " + str(exp)) from exp
+                raise ControlledException(
+                    "Error al actualizar datos: " + str(exp)) from exp
 
     def update_by(self, column_name, value, data, audit=True):
         """update by column name and value"""
