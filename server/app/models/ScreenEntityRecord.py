@@ -67,7 +67,7 @@ class ScreenEntityRecord(BaseRecord):
             total_rows = cursor.fetchone()[0]
 
         # Calculate total
-        total_pages = math.ceil(total_rows / page_request['limit'])
+        # total_pages = math.ceil(total_rows / page_request['limit'])
 
         # Get Paginate
         with self.connection.cursor() as cursor:
@@ -78,9 +78,9 @@ class ScreenEntityRecord(BaseRecord):
         self.connection.close()
 
         return {
-            'current': page_request['page'],
-            'pages': total_pages,
-            'limit': page_request['limit'],
-            'data': data,
-            'total': total_rows,
+            'page_index': page_request['page'],
+            # 'pages': total_pages,
+            'page_size': page_request['limit'],
+            'rows': data,
+            'page_count': total_rows,
         }

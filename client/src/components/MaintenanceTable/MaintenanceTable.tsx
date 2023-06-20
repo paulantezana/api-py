@@ -1,6 +1,8 @@
 import RequestApi from "helpers/RequestApi";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import StandartTable from "./StandartTable";
+import { useQuery } from '@tanstack/react-query'
+import { PaginationState } from "@tanstack/react-table";
 
 const paginateHeader = async (screenId : number) => {
   const response = await RequestApi.post('/screenentity/paginate/properties', {
@@ -12,40 +14,40 @@ const paginateHeader = async (screenId : number) => {
   return response.result.header;
 }
 
-const paginate = async () => {
+const paginate = async ({ pageIndex, pageSize } : any ) => {
   const response = await RequestApi.post('/screenentity/paginate', {
     body: {
       screen_id: 4,
-      page: 1,
-      limit: 2
+      page: pageIndex + 1,
+      limit: pageSize
     }
   })
 
-  return response.data;
+  return response.rows;
 }
 
 const MaintenanceTable = () => {
-  const [columns, setColumns] = useState([]);
-  const [dataset, setDataset] = useState([]);
+  const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 })
+  const pagination = useMemo(() => ({ pageIndex, pageSize }),[pageIndex, pageSize])
 
-  const loadTableProperties = async () => {
-    const headerData = await paginateHeader(4);
-    setColumns(headerData);
-  }
+  const paginateHeaderQuery = useQuery({
+    queryKey: ['paginateHeader'],
+    queryFn: ()=> paginateHeader(4)
+  });
 
-  const loadTable = async () => {
-    const data = await paginate();
-    setDataset(data);
-  }
-
-  useEffect(()=>{
-    loadTableProperties();
-    loadTable();
-  },[])
+  const paginationQuery = useQuery({
+    queryKey: ['pagination'],
+    queryFn: ()=>paginate({ pageIndex, pageSize }),
+  });
 
   return (
     <div>
-      <StandartTable columns={columns} dataset={dataset} />
+      <StandartTable
+        columns={paginateHeaderQuery.isLoading ? [] : paginateHeaderQuery.data }
+        dataset={paginationQuery.isLoading ? [] : paginationQuery.data }
+        pagination={pagination}
+        setPagination={setPagination}
+      />
     </div>
   )
 };
