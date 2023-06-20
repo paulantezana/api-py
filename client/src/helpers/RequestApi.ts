@@ -1,3 +1,5 @@
+import { BACKEND_IP } from "./settings";
+
 export interface RequestOptions {
   method?: string;
   headers?: Record<string, string>;
@@ -72,8 +74,9 @@ class RequestApi {
 
   public static async send(path: string, options: RequestOptions = {}): Promise<any> {
     const newOptions = RequestApi.setHeaders(options);
+    const urlPath = BACKEND_IP + path;
 
-    return fetch(path, newOptions)
+    return fetch(urlPath, newOptions)
       .then(RequestApi.checkStatus)
       .then((res) => {
         return res.json();

@@ -13,8 +13,8 @@ class ScreenEntityRecord(BaseRecord):
 
     def paginate_header(self, screen_id):
         """get paginate headers"""
-        query = """select field_name, field_title, filterable, sortable, visible, col_index from dictionary.screen_entity_fields as dsef
-                    inner join dictionary.screen_entities as se on dsef.screen_entity_id = se.id
+        query = """select field_name, field_title, filterable, sortable, visible, col_index from app.screen_entity_fields as dsef
+                    inner join app.screen_entities as se on dsef.screen_entity_id = se.id
                     where se.multiple = true and se.screen_id = %s"""
 
         with self.connection.cursor() as cursor:

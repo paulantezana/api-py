@@ -4,6 +4,7 @@ User routes
 
 from flask import Blueprint, jsonify, request
 from app.models.ScreenEntityRecord import ScreenEntityRecord
+from app.entities.Result import Result
 from app.services.Database import get_connection
 
 screen_entity = Blueprint('screen_entity', __name__,
@@ -13,18 +14,19 @@ screen_entity = Blueprint('screen_entity', __name__,
 @screen_entity.route('/paginate/properties', methods=['POST'])
 def paginate_properties():
     """Paginate properties"""
+    res = Result()
     data = request.get_json()
     connection = get_connection()
 
     entity = ScreenEntityRecord(connection)
     paginate_header = entity.paginate_header(screen_id=data['screen_id'])
 
-    result = {
+    res.success = True
+    res.result =  {
         'header': paginate_header,
-        # 'actions': data['screen_id'],
     }
 
-    return jsonify(result)
+    return jsonify(res.__dict__), 200
 
 
 @screen_entity.route('/paginate', methods=['POST'])

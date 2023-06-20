@@ -1,45 +1,51 @@
 import RequestApi from "helpers/RequestApi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import StandartTable from "./StandartTable";
 
-const paginateHeader = async () => {
-  const response = await RequestApi.post('http://127.0.0.1:5000/api/v1/screenentity/paginate/properties', {
+const paginateHeader = async (screenId : number) => {
+  const response = await RequestApi.post('/screenentity/paginate/properties', {
     body: {
-      screen_id: 1,
-      page: 1,
-      limit: 2
+      screen_id: screenId
     }
   })
 
-  return response.result;
+  return response.result.header;
 }
 
 const paginate = async () => {
-  const response = await RequestApi.post('http://127.0.0.1:5000/api/v1/screenentity/paginate', {
+  const response = await RequestApi.post('/screenentity/paginate', {
     body: {
-      screen_id: 1,
+      screen_id: 4,
       page: 1,
       limit: 2
     }
   })
 
-  return response.result;
+  return response.data;
 }
 
 const MaintenanceTable = () => {
   const [columns, setColumns] = useState([]);
   const [dataset, setDataset] = useState([]);
 
-  const paginateData = async () => {
-    const header = await paginateHeader();
-    setColumns(header);
+  const loadTableProperties = async () => {
+    const headerData = await paginateHeader(4);
+    setColumns(headerData);
+  }
 
+  const loadTable = async () => {
     const data = await paginate();
     setDataset(data);
   }
 
+  useEffect(()=>{
+    loadTableProperties();
+    loadTable();
+  },[])
+
   return (
     <div>
-
+      <StandartTable columns={columns} dataset={dataset} />
     </div>
   )
 };
