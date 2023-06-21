@@ -32,13 +32,17 @@ def paginate_properties():
 @screen_entity.route('/paginate', methods=['POST'])
 def paginate():
     """Paginate data"""
+    res = Result()
     data = request.get_json()
     connection = get_connection()
 
     entity = ScreenEntityRecord(connection=connection)
     page = entity.dynamic_paginate(page_request=data)
 
-    return jsonify(page)
+    res.success = True
+    res.result =  page
+
+    return jsonify(res.__dict__), 200
 
 
 @screen_entity.route('/insertorupdate', methods=['POST'])

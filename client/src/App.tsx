@@ -1,5 +1,5 @@
 import { RouterProvider } from "react-router-dom";
-// import publicRouter from './routes/public';
+import './app.css';
 
 import privateRouter from 'routes/private';
 
