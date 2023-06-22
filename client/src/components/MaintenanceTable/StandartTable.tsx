@@ -2,9 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import './style.css';
 import { Button, Dropdown, Space } from 'antd';
-import { DownOutlined, SortAscendingOutlined, SortDescendingOutlined, FilterOutlined, QuestionCircleOutlined, MoreOutlined } from '@ant-design/icons';
+import { DownOutlined, SortAscendingOutlined, SortDescendingOutlined, FilterOutlined, QuestionCircleOutlined, MoreOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-
 import {
   ColumnResizeMode,
   PaginationState,
@@ -12,7 +11,9 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  getSortedRowModel
 } from '@tanstack/react-table'
+import { Table, TableBody, TableFoot, TableHead, TableRezise, TableRow, TableTh, TableWrapper } from './TableStyled';
 
 const columnHelper = createColumnHelper<Record<string, any>>()
 
@@ -27,6 +28,8 @@ export interface StandartTableProps {
   setColumnVisibility?: any,
   columnOrder?: any,
   setColumnOrder?: any,
+  sorting?: any,
+  setSorting?: any,
   onTableHeaderMenuClick?: MenuProps['onClick']
 }
 
@@ -105,11 +108,13 @@ const StandartTable = ({
   setColumnVisibility,
   columnOrder,
   setColumnOrder,
+  sorting,
+  setSorting,
   onTableHeaderMenuClick = () => console.log('onTableHeaderMenuClick')
 }: StandartTableProps) => {
   const [data, setData] = useState(dataset)
   const columnsConfig = useColumns(columns);
-  const [columnResizeMode, setColumnResizeMode] = useState<ColumnResizeMode>('onChange')
+  const [columnResizeMode, setColumnResizeMode] = useState<ColumnResizeMode>('onEnd')
 
   const table = useReactTable({
     data,
@@ -120,13 +125,16 @@ const StandartTable = ({
       pagination,
       columnVisibility,
       columnOrder,
+      sorting,
     },
+    onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     onColumnOrderChange: setColumnOrder,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
     debugTable: true,
+    getSortedRowModel: getSortedRowModel(),
   })
 
   useEffect(() => {
@@ -135,7 +143,7 @@ const StandartTable = ({
 
   return (
     <div>
-      <div>
+      {/* <div>
         <div>
           <label>
             <input
@@ -164,97 +172,118 @@ const StandartTable = ({
             </div>
           )
         })}
-      </div>
-      <table
-        {...{
-          style: {
-            width: table.getCenterTotalSize(),
-          },
-        }}
-      >
-        <thead>
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => {
-                const column = getColumByFieldName(columns, header.id)
-                const dropdownItems = buidlTableHeaderMenuItems(column)
+      </div> */}
+      <TableWrapper>
+        <Table
+          {...{
+            style: {
+              width: table.getCenterTotalSize(),
+            },
+          }}
+        >
+          <TableHead>
+            {table.getHeaderGroups().map(headerGroup => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map(header => {
+                  const column = getColumByFieldName(columns, header.id)
+                  const dropdownItems = buidlTableHeaderMenuItems(column)
 
-                return (
-                  <th
+                  return (
+                    <TableTh
+                      {...{
+                        key: header.id,
+                        colSpan: header.colSpan,
+                        style: {
+                          width: header.getSize(),
+                        },
+                      }}
+                    >
+                      {
+                        header.isPlaceholder ? null : (
+                          <>
+                            <div
+                              {...{
+                                className: header.column.getCanSort()
+                                  ? 'cursor-pointer select-none'
+                                  : '',
+                                onClick: header.column.getToggleSortingHandler(),
+                              }}
+                            >
+                              {
+                                flexRender(
+                                  header.column.columnDef.header,
+                                  header.getContext()
+                                )
+                              }
+                              {{
+                              asc: <ArrowUpOutlined />,
+                              desc: <ArrowDownOutlined />,
+                            }[header.column.getIsSorted() as string] ?? null}
+                            </div>
+                            <Dropdown menu={{ items: dropdownItems, onClick: onTableHeaderMenuClick }} trigger={['click']} >
+                              <a onClick={(e) => e.preventDefault()}>
+                                <Space>
+                                  <DownOutlined />
+                                </Space>
+                              </a>
+                            </Dropdown>
+                            {/* <div>{ JSON.stringify(header) }</div> */}
+                            <TableRezise
+                              {...{
+                                onMouseDown: header.getResizeHandler(),
+                                onTouchStart: header.getResizeHandler(),
+                                className: `${header.column.getIsResizing() ? 'isResizing' : ''
+                                  }`,
+                                style: {
+                                  transform:
+                                    columnResizeMode === 'onEnd' &&
+                                      header.column.getIsResizing()
+                                      ? `translateX(${table.getState().columnSizingInfo.deltaOffset
+                                      }px)`
+                                      : '',
+                                },
+                              }}
+                            />
+                          </>
+                        )
+                      }
+                    </TableTh>
+                  )
+                })}
+              </TableRow>
+            ))}
+          </TableHead>
+          <TableBody>
+            {table.getRowModel().rows.map(row => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell, index) => (
+                  <td
                     {...{
-                      key: header.id,
-                      colSpan: header.colSpan,
+                      key: cell.id,
                       style: {
-                        width: header.getSize(),
+                        width: cell.column.getSize(),
                       },
                     }}
                   >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                    <Dropdown menu={{ items: dropdownItems, onClick: onTableHeaderMenuClick }} trigger={['click']} >
-                      <a onClick={(e) => e.preventDefault()}>
-                        <Space>
-                          <DownOutlined />
-                        </Space>
-                      </a>
-                    </Dropdown>
-                    {/* <div>{ JSON.stringify(header) }</div> */}
-                    <div
-                      {...{
-                        onMouseDown: header.getResizeHandler(),
-                        onTouchStart: header.getResizeHandler(),
-                        className: `resizer ${header.column.getIsResizing() ? 'isResizing' : ''
-                          }`,
-                        style: {
-                          transform:
-                            columnResizeMode === 'onEnd' &&
-                              header.column.getIsResizing()
-                              ? `translateX(${table.getState().columnSizingInfo.deltaOffset
-                              }px)`
-                              : '',
-                        },
-                      }}
-                    />
-                  </th>
-                )
-              })}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map(row => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell, index) => (
-                <td
-                  {...{
-                    key: cell.id,
-                    style: {
-                      width: cell.column.getSize(),
-                    },
-                  }}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  {
-                    index === 0 &&
-                    <Dropdown menu={{ items: actions }} >
-                      <a onClick={(e) => e.preventDefault()}>
-                        <Space>
-                          <MoreOutlined />
-                        </Space>
-                      </a>
-                    </Dropdown>
-                  }
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-        <tfoot></tfoot>
-      </table>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {
+                      index === 0 &&
+                      <Dropdown menu={{ items: actions }} >
+                        <a onClick={(e) => e.preventDefault()}>
+                          <Space>
+                            <MoreOutlined />
+                          </Space>
+                        </a>
+                      </Dropdown>
+                    }
+                  </td>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFoot></TableFoot>
+        </Table>
+      </TableWrapper>
       <div className="flex items-center gap-2">
         <button
           className="border rounded p-1"

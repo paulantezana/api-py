@@ -15,7 +15,7 @@ const { Header, Sider, Content } = Layout;
 const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const {
-    token: { colorBgLayout },
+    token: { colorBgLayout, colorBgContainer },
   } = theme.useToken();
 
   return (
@@ -59,7 +59,7 @@ const AdminLayout: React.FC = () => {
             }}
           />
         </Header>
-        <Content>
+        <Content style={{ background: colorBgContainer }} >
           <Outlet />
         </Content>
       </Layout>

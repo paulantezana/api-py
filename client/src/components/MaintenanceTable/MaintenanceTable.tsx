@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import StandartTable from "./StandartTable";
 import { useQuery } from '@tanstack/react-query'
-import { ColumnOrderState, PaginationState } from "@tanstack/react-table";
+import { ColumnOrderState, PaginationState, SortingState } from "@tanstack/react-table";
 import { screenEntityPaginate, screenEntityPaginateProperties } from "services/screenEntity";
 import { getActions } from "services/config";
 import ToolbarAction from "components/ToolbarAction/ToolbarAction";
@@ -14,6 +14,7 @@ const MaintenanceTable = ({screenId}:MaintenanceTableProps) => {
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
   const [columnVisibility, setColumnVisibility] = useState({});
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const pagination = useMemo(() => ({ pageIndex, pageSize }), [pageIndex, pageSize])
 
@@ -51,6 +52,8 @@ const MaintenanceTable = ({screenId}:MaintenanceTableProps) => {
   const toolbarActions = (actionsQuery.data ?? []).filter((item : any) => item.position === 'TOOLBAR');
   const tableActions = (actionsQuery.data ?? []).filter((item : any) => item.position === 'TABLE').map((item:any)=>({label: item.title, key: item.id}))
 
+  console.log({ pageIndex, pageSize, columnVisibility, columnOrder, sorting }, '__COMO__');
+
   return (
     <div>
       <ToolbarAction items={toolbarActions} onClick={handleToolbarActionClick} />
@@ -66,6 +69,8 @@ const MaintenanceTable = ({screenId}:MaintenanceTableProps) => {
         columnOrder={columnOrder}
         setColumnOrder={setColumnOrder}
         onTableHeaderMenuClick={handleTableHeaderMenuClick}
+        sorting={sorting}
+        setSorting={setSorting}
       />
     </div>
   )
