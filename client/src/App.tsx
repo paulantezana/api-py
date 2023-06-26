@@ -1,5 +1,6 @@
 import { RouterProvider } from "react-router-dom";
 import './app.css';
+import 'antd/dist/reset.css';
 
 import privateRouter from 'routes/private';
 
