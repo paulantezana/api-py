@@ -9,14 +9,34 @@ import {
   VideoCameraOutlined,
 } from '@ant-design/icons';
 import { Layout, Menu, Button, theme } from 'antd';
+import { LOGIN_KEY } from 'helpers/settings';
+import LocalStorageService from 'services/localStorage';
+import { useQuery } from '@tanstack/react-query';
+import { configInit } from 'services/config';
 
 const { Header, Sider, Content } = Layout;
+
+const getToken = ()=> {
+  const data = localStorage.getItem(LOGIN_KEY);
+  if (data) {
+    const parsedData = JSON.parse(data);
+    return parsedData;
+  }
+  return null;
+}
 
 const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgLayout, colorBgContainer },
   } = theme.useToken();
+
+  const localStorageData = LocalStorageService.getItem(LOGIN_KEY);
+
+  const appQuery = useQuery({
+    queryKey: ['app', localStorageData.user.id],
+    queryFn: ()=> configInit(localStorageData.user.id)
+  });
 
   return (
     <Layout hasSider>
