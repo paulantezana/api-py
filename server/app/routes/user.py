@@ -29,7 +29,7 @@ def login():
     token = create_access_token(identity=user_data['id'])
 
     res.success = True
-    res.result = {'user': user_data, 'token': token}
+    res.result = {'user': {'id': user_data['id']}, 'token': token}
     res.message = 'Login success'
 
     return jsonify(res.__dict__), 200

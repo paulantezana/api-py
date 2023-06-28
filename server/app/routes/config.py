@@ -5,6 +5,7 @@ User routes
 from flask import Blueprint, jsonify, request
 from app.models.MenuRecord import MenuRecord
 from app.models.ActionRecord import ActionRecord
+from app.models.UserRecord import UserRecord
 from app.services.Database import get_connection
 from app.entities.Result import Result
 
@@ -15,12 +16,18 @@ config = Blueprint('config', __name__, url_prefix='/config')
 def init():
     """Gent initial settings"""
     res = Result()
+    data = request.get_json()
     connection = get_connection()
+
     menu_model = MenuRecord(connection=connection)
+    user_model = UserRecord(connection=connection)
+
+    user = user_model.get_by_id(data['user_id'])
     menus = menu_model.get_all()
 
     res.success = True
     res.result =  {
+        'user': user,
         'menus': menus,
     }
 
