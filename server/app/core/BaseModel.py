@@ -80,16 +80,23 @@ class BaseModel:
 
         return sql_condition
 
-    def build_sort_sql(self, sort, alias=''):
+    def build_sort_sql(self, sorter, alias=''):
         """build sort sql"""
-        sort_sql = ''
-        if alias != '':
-            alias = alias + '.'
+        if len(sorter) == 0:
+            return ''
+        
+        order_by_clause = "ORDER BY "
+        order_by_fields = []
+        
+        for item in sorter:
+            field = item["field"]
+            desc = item["desc"]
 
-        if len(sort) > 0:
-            sort_sql = f"ORDER BY {alias}{sort['field']} {sort['order']}"
+            order_by_fields.append(field + (' DESC'  if desc else ' ASC'))
 
-        return sort_sql
+        order_by_clause += ", ".join(order_by_fields)
+
+        return order_by_clause
 
     def assembly_prefix(self, prefix):
         """assembly prefix """

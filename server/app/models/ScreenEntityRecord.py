@@ -54,9 +54,8 @@ class ScreenEntityRecord(BaseRecord):
         
         prefix = self.assembly_prefix(prefix)
         # whre_sql = self.build_where_sql(page_request.get('filter', []), page_request.get('aditionalFilter', ''), page_request.get('alias', ''))
-        # sort_sql = self.build_sort_sql(page_request.get('sorter', []), page_request.get('alias', ''))
+        sort_sql = self.build_sort_sql(page_request.get('sorter', []), page_request.get('alias', ''))
         whre_sql = ""
-        sort_sql = ""
 
         offset = (page_request['page'] - 1) * page_request['limit']
 
@@ -71,8 +70,8 @@ class ScreenEntityRecord(BaseRecord):
 
         # Get Paginate
         with self.connection.cursor() as cursor:
-            cursor.execute(
-                f"SELECT * FROM {current_entity['schema_name']}.{current_entity['table_name']} {whre_sql} {sort_sql} LIMIT {page_request['limit']} OFFSET {offset}")
+            sql_query = f"SELECT * FROM {current_entity['schema_name']}.{current_entity['table_name']} {whre_sql} {sort_sql} LIMIT {page_request['limit']} OFFSET {offset}"
+            cursor.execute(sql_query)
             data = self.dictfetchall(cursor)
 
         self.connection.close()

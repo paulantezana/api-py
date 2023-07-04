@@ -62,8 +62,13 @@ class BaseRecord(BaseModel):
         sql = f"SELECT * FROM {prefix}{self.table} WHERE {self.primary_key} = %s LIMIT 1"
         with self.connection.cursor() as cursor:
             cursor.execute(sql, (primary_key,))
-            return cursor.fetchone()
+            row = cursor.fetchone()
 
+        if row is not None:
+            column_names = [desc[0] for desc in cursor.description]
+            return dict(zip(column_names, row))
+        return None
+    
     def get_by(self, column_name, value, prefix=''):
         """get data by columname and value"""
         prefix = self.assembly_prefix(prefix)
