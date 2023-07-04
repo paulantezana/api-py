@@ -5,6 +5,7 @@ import { ColumnOrderState, PaginationState, SortingState } from "@tanstack/react
 import { screenEntityPaginate, screenEntityPaginateProperties } from "services/screenEntity";
 import { getActions } from "services/config";
 import ToolbarAction from "components/ToolbarAction/ToolbarAction";
+import { MenuProps } from "antd";
 
 interface MaintenanceTableProps {
   screenId:number,
@@ -24,8 +25,8 @@ const MaintenanceTable = ({screenId}:MaintenanceTableProps) => {
   });
 
   const paginationQuery = useQuery({
-    queryKey: ['pagination', { pageIndex, pageSize }],
-    queryFn: () => screenEntityPaginate({ pageIndex, pageSize, screenId }),
+    queryKey: ['pagination', { pageIndex, pageSize, sorting }],
+    queryFn: () => screenEntityPaginate({ pageIndex, pageSize, screenId, sorting }),
   });
 
   const actionsQuery = useQuery({
@@ -41,8 +42,19 @@ const MaintenanceTable = ({screenId}:MaintenanceTableProps) => {
     }
   }, [paginateHeaderQuery.data?.header ?? []]);
 
-  const handleTableHeaderMenuClick = ()=> {
-
+  const handleTableHeaderMenuClick:MenuProps['onClick'] = (e)=> {
+    switch (e.key) {
+      case '0':
+        break;
+      case '1':
+        break;
+      case '1':
+        break;
+      case '1':
+        break;
+      default:
+        break;
+    }
   }
 
   const handleToolbarActionClick = (key:string, domEvent:MouseEvent) => {

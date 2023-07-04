@@ -10,12 +10,13 @@ export const screenEntityPaginateProperties = async (screenId: number) => {
     return response.result;
 }
 
-export const screenEntityPaginate = async ({ pageIndex, pageSize, screenId }: any) => {
+export const screenEntityPaginate = async ({ pageIndex, pageSize, screenId, sorting }: any) => {
     const response = await RequestApi.post('/screenentity/paginate', {
         body: {
             screen_id: screenId,
             page: pageIndex + 1,
-            limit: pageSize
+            limit: pageSize,
+            sorter: sorting.map((item:any)=>({ field: item.id, desc: item.desc }))
         }
     })
 

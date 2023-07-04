@@ -15,10 +15,11 @@ import {
 import { Table as TableStyled, TableBody, TableFoot, TableHead, TableRezise, TableRow, TableTd, TableTh, TableWrapper } from './TableStyled';
 
 import ColumnVisibility from './ColumnVisibility';
+import CustomTableHeadCell from './CustomTableHeadCell';
 
 const columnHelper = createColumnHelper<Record<string, any>>()
 
-export interface StandartTableProps {
+export interface SSRTableProps {
   actions?: MenuProps['items'];
   columns: Record<string, any>[];
   dataset: Record<string, any>[];
@@ -98,7 +99,7 @@ const buidlTableHeaderMenuItems = (column: Record<string, any>): MenuProps['item
   return items;
 }
 
-const StandartTable = ({
+const SSRTable = ({
   actions = [],
   columns,
   dataset,
@@ -112,7 +113,7 @@ const StandartTable = ({
   sorting,
   setSorting,
   onTableHeaderMenuClick = () => console.log('onTableHeaderMenuClick')
-}: StandartTableProps) => {
+}: SSRTableProps) => {
   const [data, setData] = useState(dataset)
   const columnsConfig = useColumns(columns);
   const [columnResizeMode, setColumnResizeMode] = useState<ColumnResizeMode>('onEnd') // onChange - onEnd
@@ -173,66 +174,12 @@ const StandartTable = ({
                   const column = getColumByFieldName(columns, header.id)
                   const dropdownItems = buidlTableHeaderMenuItems(column)
 
-                  return (
-                    <TableTh
-                      {...{
-                        key: header.id,
-                        colSpan: header.colSpan,
-                        style: {
-                          width: header.getSize(),
-                        },
-                      }}
-                    >
-                      {
-                        header.isPlaceholder ? null : (
-                          <>
-                            <div
-                              {...{
-                                className: header.column.getCanSort()
-                                  ? 'cursor-pointer select-none'
-                                  : '',
-                                onClick: header.column.getToggleSortingHandler(),
-                              }}
-                            >
-                              {
-                                flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                                )
-                              }
-                              {{
-                                asc: <ArrowUpOutlined />,
-                                desc: <ArrowDownOutlined />,
-                              }[header.column.getIsSorted() as string] ?? null}
-                            </div>
-                            <Dropdown menu={{ items: dropdownItems, onClick: onTableHeaderMenuClick }} trigger={['click']} >
-                              <a onClick={(e) => e.preventDefault()}>
-                                <Space>
-                                  <DownOutlined />
-                                </Space>
-                              </a>
-                            </Dropdown>
-                            {/* <div>{ JSON.stringify(header) }</div> */}
-                            <TableRezise
-                              {...{
-                                onMouseDown: header.getResizeHandler(),
-                                onTouchStart: header.getResizeHandler(),
-                                className: `resizer ${header.column.getIsResizing() ? 'isResizing' : ''}`,
-                                style: {
-                                  transform:
-                                    columnResizeMode === 'onEnd' &&
-                                      header.column.getIsResizing()
-                                      ? `translateX(${table.getState().columnSizingInfo.deltaOffset
-                                      }px)`
-                                      : '',
-                                },
-                              }}
-                            />
-                          </>
-                        )
-                      }
-                    </TableTh>
-                  )
+                  return (<CustomTableHeadCell
+                    header={header}
+                    table={table}
+                    dropdownItems={dropdownItems}
+                    columnResizeMode={columnResizeMode}
+                    onTableHeaderMenuClick={onTableHeaderMenuClick} />)
                 })}
               </TableRow>
             ))}
@@ -272,4 +219,4 @@ const StandartTable = ({
   );
 };
 
-export default StandartTable;
+export default SSRTable;

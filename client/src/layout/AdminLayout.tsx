@@ -1,42 +1,49 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 import React, { useState } from 'react';
 import {
   MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
+  MenuUnfoldOutlined
 } from '@ant-design/icons';
-import { Layout, Menu, Button, theme } from 'antd';
+
+import { Layout, Menu, Button, theme, MenuProps } from 'antd';
 import { LOGIN_KEY } from 'helpers/settings';
 import LocalStorageService from 'services/localStorage';
 import { useQuery } from '@tanstack/react-query';
 import { configInit } from 'services/config';
+import Util from 'helpers/Util';
 
 const { Header, Sider, Content } = Layout;
 
-const getToken = ()=> {
-  const data = localStorage.getItem(LOGIN_KEY);
-  if (data) {
-    const parsedData = JSON.parse(data);
-    return parsedData;
-  }
-  return null;
+const menuToTree = (items:any[])=> {
+  return Util.arrayToTree(items,'null','parent_id', (item)=> ({ key: item.id, label: item.description }))
 }
 
 const AdminLayout: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+
   const {
     token: { colorBgLayout, colorBgContainer },
   } = theme.useToken();
 
   const localStorageData = LocalStorageService.getItem(LOGIN_KEY);
 
-  const appQuery = useQuery({
+  const { isLoading, data } = useQuery({
     queryKey: ['app', localStorageData.user.id],
     queryFn: ()=> configInit(localStorageData.user.id)
   });
+
+  const onMenuClick: MenuProps['onClick'] = (e) => {
+    const menu = data.menus.find((item:any) => String(item.id) === String(e.key));
+    if(menu){
+      navigate(menu.url_path);
+    }
+  };
+
+  if(isLoading){
+    return <div>Loading..</div>;
+  }
 
   return (
     <Layout hasSider>
@@ -47,23 +54,8 @@ const AdminLayout: React.FC = () => {
           mode="inline"
           defaultSelectedKeys={['1']}
           style={{ background: colorBgLayout }}
-          items={[
-            {
-              key: '1',
-              icon: <UserOutlined />,
-              label: 'nav 1',
-            },
-            {
-              key: '2',
-              icon: <VideoCameraOutlined />,
-              label: 'nav 2',
-            },
-            {
-              key: '3',
-              icon: <UploadOutlined />,
-              label: 'nav 3',
-            },
-          ]}
+          onClick={onMenuClick}
+          items={menuToTree(data.menus)}
         />
       </Sider>
       <Layout>

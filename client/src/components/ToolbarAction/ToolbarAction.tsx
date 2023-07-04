@@ -16,7 +16,8 @@ const ToolbarAction = ({ items, onClick } : ToolbarActionProps) => {
           components: {
             Menu: {
               horizontalItemHoverBg: controlItemBgActive,
-              linkHoverDecoration: 'red',
+              activeBarHeight: 0,
+              controlHeightLG: 32,
             }
           }
         }}

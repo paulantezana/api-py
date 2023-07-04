@@ -1,9 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
-import LoginPage from './../pages/LoginPage';
-
 import AdminLayout  from "layout/AdminLayout";
 import ErrorPage from "pages/ErrorPage";
-import User from "pages/admin/maintenance/User";
+import PaginateTable from "pages/screen/PaginateTable/PaginateTable";
 
 const router = createBrowserRouter([
   {
@@ -12,13 +10,8 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: 'maintenance',
-        children: [
-          {
-            path: 'user',
-            element: <User/>,
-          }
-        ]
+        path: 'screen/:id',
+        element: <PaginateTable/>
       }
     ]
   },
