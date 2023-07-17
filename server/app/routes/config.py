@@ -23,7 +23,7 @@ def init():
     user_model = UserRecord(connection=connection)
 
     user = user_model.get_by_id(data['user_id'])
-    menus = menu_model.get_all()
+    menus = menu_model.get_all_and_screen()
 
     res.success = True
     res.result =  {
