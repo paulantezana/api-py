@@ -10,7 +10,7 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: 'screen/:id',
+        path: 'screen/:screenId',
         element: <PaginateTable/>
       }
     ]

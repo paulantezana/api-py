@@ -40,11 +40,17 @@ export const TableTh = styled.div`
     font-size: 10px;
     opacity: 0;
     margin-right: 4px;
+
+    width: 12px;
+    height: 16px;
+    z-index: 3;
+
+    color: inherit;
   }
   &:hover{
-    /* background: #E5F3FE; */
     .ant-dropdown-trigger{
       opacity: 1;
+      color: inherit;
     }
   }
 `;
@@ -55,24 +61,21 @@ export const TableTd = styled.div`
 
 export const TableRezise = styled.div`
   position: absolute;
-  right: 0;
+  z-index: 1;
+  right: -11px;
   top: 0;
   height: 100%;
-  width: 5px;
-  background: rgba(0, 0, 0, 0.5);
+  width: 20px;
   cursor: col-resize;
   user-select: none;
   touch-action: none;
+
   &.isResizing{
-    background: blue;
+    background: linear-gradient(90deg, transparent 9px, #00838F 9px, #00838F 11px, transparent 11px);
     opacity: 1;
   }
 
-  @media (hover: hover) {
-    opacity: 0;
-
-    *:hover > & {
-      opacity: 1;
-    }
+  &:hover{
+    background: linear-gradient(90deg, transparent 9px, #00838F 9px, #00838F 11px, transparent 11px);
   }
 `;

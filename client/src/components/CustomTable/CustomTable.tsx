@@ -16,10 +16,11 @@ import { Table as TableStyled, TableBody, TableFoot, TableHead, TableRezise, Tab
 
 import ColumnVisibility from './ColumnVisibility';
 import CustomTableHeadCell from './CustomTableHeadCell';
+import CustomTableBodyCell from './CustomTableBodyCell';
 
 const columnHelper = createColumnHelper<Record<string, any>>()
 
-export interface SSRTableProps {
+export interface CustomTableProps {
   actions?: MenuProps['items'];
   columns: Record<string, any>[];
   dataset: Record<string, any>[];
@@ -38,12 +39,21 @@ export interface SSRTableProps {
 // const [columnOrder, setColumnOrder] = useState<ColumnOrderState>([])
 
 const useColumns = (columns: Record<string, any>[]) => {
+  // const optionColumns = {
+  //   field_title: '',
+  //   field_name: '__option__',
+  //   col_width: 20,
+  // };
+
+  // const newColumns = columns.length === 0 ? [optionColumns] : [...columns.slice(0,1), optionColumns, ...columns.slice(1)];
+
   const columnsConfig = columns.map((item) => {
+    const colWidth = item.col_width > 0 ? item.col_width : (item.field_title.split('').reduce((a: number) => a += 9, 0))
     return columnHelper.accessor(item.field_name, {
       header: item.field_title,
       cell: (info) => info.getValue(),
       footer: (info) => info.column.id,
-      // size: 50,
+      size: colWidth,
     })
   });
 
@@ -99,7 +109,7 @@ const buidlTableHeaderMenuItems = (column: Record<string, any>): MenuProps['item
   return items;
 }
 
-const SSRTable = ({
+const CustomTable = ({
   actions = [],
   columns,
   dataset,
@@ -113,7 +123,7 @@ const SSRTable = ({
   sorting,
   setSorting,
   onTableHeaderMenuClick = () => console.log('onTableHeaderMenuClick')
-}: SSRTableProps) => {
+}: CustomTableProps) => {
   const [data, setData] = useState(dataset)
   const columnsConfig = useColumns(columns);
   const [columnResizeMode, setColumnResizeMode] = useState<ColumnResizeMode>('onEnd') // onChange - onEnd
@@ -171,15 +181,17 @@ const SSRTable = ({
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map(header => {
-                  const column = getColumByFieldName(columns, header.id)
-                  const dropdownItems = buidlTableHeaderMenuItems(column)
+                  const column = getColumByFieldName(columns, header.id);
+                  const dropdownItems = buidlTableHeaderMenuItems(column);
 
                   return (<CustomTableHeadCell
+                    key={header.id}
                     header={header}
                     table={table}
                     dropdownItems={dropdownItems}
                     columnResizeMode={columnResizeMode}
-                    onTableHeaderMenuClick={onTableHeaderMenuClick} />)
+                    onTableHeaderMenuClick={onTableHeaderMenuClick} />
+                  )
                 })}
               </TableRow>
             ))}
@@ -187,28 +199,7 @@ const SSRTable = ({
           <TableBody>
             {table.getRowModel().rows.map(row => (
               <TableRow key={row.id}>
-                {row.getVisibleCells().map((cell, index) => (
-                  <TableTd
-                    {...{
-                      key: cell.id,
-                      style: {
-                        width: cell.column.getSize(),
-                      },
-                    }}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    {
-                      index === 0 &&
-                      <Dropdown menu={{ items: actions }} >
-                        <a onClick={(e) => e.preventDefault()}>
-                          <Space>
-                            <MoreOutlined />
-                          </Space>
-                        </a>
-                      </Dropdown>
-                    }
-                  </TableTd>
-                ))}
+                {row.getVisibleCells().map((cell, index) => <CustomTableBodyCell key={cell.id} cell={cell} actions={actions} parentIndex={index} />)}
               </TableRow>
             ))}
           </TableBody>
@@ -219,4 +210,4 @@ const SSRTable = ({
   );
 };
 
-export default SSRTable;
+export default CustomTable;

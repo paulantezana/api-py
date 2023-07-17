@@ -37,7 +37,8 @@ const AdminLayout: React.FC = () => {
   const onMenuClick: MenuProps['onClick'] = (e) => {
     const menu = data.menus.find((item:any) => String(item.id) === String(e.key));
     if(menu){
-      navigate(menu.url_path);
+      // navigate(menu.url_path);
+      navigate('screen/' + String(menu.screen_id));
     }
   };
 

@@ -130,14 +130,6 @@ const CustomTableHeadCellContent = ({ header, table, dropdownItems, columnResize
                     desc: <ArrowDownOutlined />,
                 }[header.column.getIsSorted() as string] ?? null}
             </div>
-            <Dropdown menu={{ items: dropdownItems, onClick: handleTableHeaderMenuClick }} trigger={['click']} >
-                <a onClick={(e) => e.preventDefault()}>
-                    <Space>
-                        <DownOutlined />
-                    </Space>
-                </a>
-            </Dropdown>
-   
             <TableRezise
                 {...{
                     onMouseDown: header.getResizeHandler(),
@@ -153,6 +145,14 @@ const CustomTableHeadCellContent = ({ header, table, dropdownItems, columnResize
                     },
                 }}
             />
+
+            <Dropdown menu={{ items: dropdownItems, onClick: handleTableHeaderMenuClick }} trigger={['click']} arrow>
+                <a onClick={(e) => e.preventDefault()}>
+                    <Space>
+                        <DownOutlined />
+                    </Space>
+                </a>
+            </Dropdown>
         </>
     )
 }
@@ -167,24 +167,24 @@ interface CustomTableHeadCellProps extends CustomTableHeadCellContentProps {
 
 const CustomTableHeadCell = ({ header, table, dropdownItems, columnResizeMode, onTableHeaderMenuClick }: CustomTableHeadCellProps) => {
     return (<TableTh
-        {...{
-            key: header.id,
-            colSpan: header.colSpan,
-            style: {
-                width: header.getSize(),
-            },
-        }}
-    >
-        {
-            header.isPlaceholder ? null : <CustomTableHeadCellContent
-                header={header}
-                table={table}
-                dropdownItems={dropdownItems}
-                columnResizeMode={columnResizeMode}
-                onTableHeaderMenuClick={onTableHeaderMenuClick}
-            />
-        }
-    </TableTh>)
+            {...{
+                key: header.id,
+                colSpan: header.colSpan,
+                style: {
+                    width: header.getSize(),
+                },
+            }}
+        >
+            {
+                header.isPlaceholder ? null : <CustomTableHeadCellContent
+                    header={header}
+                    table={table}
+                    dropdownItems={dropdownItems}
+                    columnResizeMode={columnResizeMode}
+                    onTableHeaderMenuClick={onTableHeaderMenuClick}
+                />
+            }
+        </TableTh>)
 }
 
 export default CustomTableHeadCell;
