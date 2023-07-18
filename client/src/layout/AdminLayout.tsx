@@ -15,12 +15,12 @@ import Util from 'helpers/Util';
 
 const { Header, Sider, Content } = Layout;
 
-const menuToTree = (items:any[])=> {
-  return Util.arrayToTree(items,'null','parent_id', (item)=> ({ key: item.id, label: item.description }))
+const menuToTree = (items: any[]) => {
+  return Util.arrayToTree(items, 'null', 'parent_id', (item) => ({ key: item.id, label: item.description }))
 }
 
 const AdminLayout: React.FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const navigate = useNavigate();
 
   const {
@@ -31,24 +31,24 @@ const AdminLayout: React.FC = () => {
 
   const { isLoading, data } = useQuery({
     queryKey: ['app', localStorageData.user.id],
-    queryFn: ()=> configInit(localStorageData.user.id)
+    queryFn: () => configInit(localStorageData.user.id)
   });
 
   const onMenuClick: MenuProps['onClick'] = (e) => {
-    const menu = data.menus.find((item:any) => String(item.id) === String(e.key));
-    if(menu){
+    const menu = data.menus.find((item: any) => String(item.id) === String(e.key));
+    if (menu) {
       // navigate(menu.url_path);
       navigate('screen/' + String(menu.screen_id));
     }
   };
 
-  if(isLoading){
+  if (isLoading) {
     return <div>Loading..</div>;
   }
 
   return (
-    <Layout hasSider>
-      <Sider trigger={null} collapsible collapsed={collapsed} style={{ background: colorBgLayout }}>
+    <Layout hasSider style={{ height: '100vh' }}>
+      <Sider trigger={null} collapsedWidth={48} collapsible collapsed={collapsed} style={{ background: colorBgLayout }}>
         <div className="demo-logo-vertical" />
         <Menu
           // theme="dark"
@@ -60,7 +60,7 @@ const AdminLayout: React.FC = () => {
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgLayout, lineHeight: '50px', height: '50px' }} >
+        <Header style={{ padding: 0, background: colorBgLayout, lineHeight: '48px', height: '48px' }} >
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}

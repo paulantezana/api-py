@@ -8,19 +8,20 @@ import { MenuProps } from "antd";
 import CustomTable from "components/CustomTable/CustomTable";
 
 interface MaintenanceTableProps {
-  screenId:number,
+  screenId: number,
 }
 
-const MaintenanceTable = ({screenId}:MaintenanceTableProps) => {
+const MaintenanceTable = ({ screenId }: MaintenanceTableProps) => {
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 10 });
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>([])
-  const [sorting, setSorting] = useState<SortingState>([])
+  // const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState({})
+  const [columnOrder, setColumnOrder] = useState<ColumnOrderState>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const pagination = useMemo(() => ({ pageIndex, pageSize }), [pageIndex, pageSize])
 
   const paginateHeaderQuery = useQuery({
-    queryKey: ['paginate_properties'],
+    queryKey: ['paginate_properties', screenId],
     queryFn: () => screenEntityPaginateProperties(screenId)
   });
 
@@ -48,48 +49,59 @@ const MaintenanceTable = ({screenId}:MaintenanceTableProps) => {
     }
   }, [paginateHeaderQuery.data?.header ?? []]);
 
-  const handleTableHeaderMenuClick:MenuProps['onClick'] = (e)=> {
-    switch (e.key) {
+  const handleTableHeaderMenuClick = (column: any, key: string) => {
+    console.log(column, key, 'CLICK_MENU_HEADER');
+    switch (key) {
       case '0':
+        setSorting([{
+          desc: false,
+          id: column.id,
+        }]);
         break;
       case '1':
+        setSorting([{
+          desc: true,
+          id: column.id,
+        }]);
         break;
-      case '1':
+      case '2':
         break;
-      case '1':
+      case '3':
+        break;
+      case '4':
         break;
       default:
         break;
     }
   }
 
-  const handleToolbarActionClick = (key:string, domEvent:MouseEvent) => {
+  const handleToolbarActionClick = (key: string, domEvent: MouseEvent) => {
     // const matchItem = customItems[key];
   };
 
-  const toolbarActions = (actionsQuery.data ?? []).filter((item : any) => item.position === 'TOOLBAR');
-  const tableActions = (actionsQuery.data ?? []).filter((item : any) => item.position === 'TABLE').map((item:any)=>({label: item.title, key: item.id}))
-
-  console.log({ /*pageIndex, pageSize,*/ columnVisibility, columnOrder, sorting }, '__COMO__');
+  const toolbarActions = (actionsQuery.data ?? []).filter((item: any) => item.position === 'TOOLBAR');
+  const tableActions = (actionsQuery.data ?? []).filter((item: any) => item.position === 'TABLE').map((item: any) => ({ label: item.title, key: item.id }))
 
   return (
-    <div>
+    <div style={{ padding: '0 8px' }}>
       <ToolbarAction items={toolbarActions} onClick={handleToolbarActionClick} />
-      <CustomTable
-        actions={tableActions}
-        columns={paginateHeaderQuery.data?.header ?? []}
-        dataset={paginationQuery.data?.rows ?? []}
-        pageCount={paginationQuery.data?.page_count ?? -1}
-        pagination={pagination}
-        setPagination={setPagination}
-        columnVisibility={columnVisibility}
-        setColumnVisibility={setColumnVisibility}
-        columnOrder={columnOrder}
-        setColumnOrder={setColumnOrder}
-        onTableHeaderMenuClick={handleTableHeaderMenuClick}
-        sorting={sorting}
-        setSorting={setSorting}
-      />
+      <div style={{ marginTop: '5px' }}>
+        <CustomTable
+          actions={tableActions}
+          columns={paginateHeaderQuery.data?.header ?? []}
+          dataset={paginationQuery.data?.rows ?? []}
+          pageCount={paginationQuery.data?.page_count ?? -1}
+          pagination={pagination}
+          setPagination={setPagination}
+          columnVisibility={columnVisibility}
+          setColumnVisibility={setColumnVisibility}
+          columnOrder={columnOrder}
+          setColumnOrder={setColumnOrder}
+          onTableHeaderMenuClick={handleTableHeaderMenuClick}
+          sorting={sorting}
+          setSorting={setSorting}
+        />
+      </div>
     </div>
   )
 };

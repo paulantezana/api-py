@@ -4,34 +4,44 @@ export const TableWrapper = styled.div`
   overflow-y: auto;
 `;
 
-export const Table = styled.div`
-  /* width: 100%;
+export const Table = styled.table`
+    width: 100%;
+    border: 1px solid #ddd;
     border-radius: 4px;
     border-collapse: separate;
-    border-spacing: 0; */
+    border-spacing: 0;
 `;
 
-export const TableHead = styled.div`
+export const TableHead = styled.thead`
   
 `;
 
-export const TableBody = styled.div`
+export const TableBody = styled.tbody`
   
 `;
 
-export const TableFoot = styled.div`
+export const TableFoot = styled.tfoot`
   
 `;
 
-export const TableRow = styled.div`
-  display: flex;
+export const TableRow = styled.tr`
+  /* display: flex; */
+  &:last-child{
+    &:last-child {
+      td {
+        border-bottom: 0;
+      }
+    }
+  }
 `;
 
-export const TableTh = styled.div`
-  position: relative;
+export const TableTh = styled.th`
+  /* position: relative; */
   padding: 6px 4px 4px;
   border-bottom: 1px solid #ddd;
-  border-left: 1px solid #ddd;
+  /* border-left: 1px solid transparent; */
+  /* background: #F8F8F8; */
+  font-weight: bold;
 
   .ant-dropdown-trigger{
     position: absolute;
@@ -55,8 +65,9 @@ export const TableTh = styled.div`
   }
 `;
 
-export const TableTd = styled.div`
-  /* border-bottom: 1px solid #ddd; */
+export const TableTd = styled.td`
+  border-bottom: 1px solid #ddd;
+  padding: 1px;
 `;
 
 export const TableRezise = styled.div`

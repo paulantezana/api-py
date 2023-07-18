@@ -33,7 +33,8 @@ export interface CustomTableProps {
   setColumnOrder?: any,
   sorting?: any,
   setSorting?: any,
-  onTableHeaderMenuClick?: MenuProps['onClick']
+  // onTableHeaderMenuClick?: MenuProps['onClick'],
+  onTableHeaderMenuClick: (column: any, event: string) => void,
 }
 
 // const [columnOrder, setColumnOrder] = useState<ColumnOrderState>([])
@@ -53,7 +54,7 @@ const useColumns = (columns: Record<string, any>[]) => {
       header: item.field_title,
       cell: (info) => info.getValue(),
       footer: (info) => info.column.id,
-      size: colWidth,
+      // size: colWidth,
     })
   });
 
@@ -130,24 +131,25 @@ const CustomTable = ({
 
   const table = useReactTable({
     data,
-    pageCount,
-    columnResizeMode,
     columns: columnsConfig,
+    enableColumnResizing: true,
+    columnResizeMode,
+    pageCount,
     state: {
       pagination,
       columnVisibility,
       columnOrder,
       sorting,
     },
-    enableMultiSort: true,
+    // enableMultiSort: true,
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
     onColumnOrderChange: setColumnOrder,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    manualPagination: true,
-    debugTable: true,
-    getSortedRowModel: getSortedRowModel(),
+    // manualPagination: true,
+    // debugTable: true,
+    // getSortedRowModel: getSortedRowModel(),
   })
 
   useEffect(() => {
@@ -156,7 +158,7 @@ const CustomTable = ({
 
   return (
     <div>
-      <Row>
+      <Row style={{ marginBottom: '5px' }}>
         <Col flex={'auto'}>
           <Tag closable>Filter 1</Tag><Tag closable>Filter 2</Tag>
         </Col>
@@ -170,13 +172,7 @@ const CustomTable = ({
         </Col>
       </Row>
       <TableWrapper>
-        <TableStyled
-          {...{
-            style: {
-              width: table.getCenterTotalSize(),
-            },
-          }}
-        >
+        <TableStyled>
           <TableHead>
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
@@ -190,7 +186,9 @@ const CustomTable = ({
                     table={table}
                     dropdownItems={dropdownItems}
                     columnResizeMode={columnResizeMode}
-                    onTableHeaderMenuClick={onTableHeaderMenuClick} />
+                    onTableHeaderMenuClick={onTableHeaderMenuClick}
+                    isLast={headerGroup.headers.length === (header.index + 1)}
+                  />
                   )
                 })}
               </TableRow>
